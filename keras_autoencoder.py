@@ -11,6 +11,7 @@ from keras import layers
 from keras.callbacks import TensorBoard
 from keras.datasets import mnist
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Discard the labels, after all we are autoencoding 
 (x_train, _), (x_test, _) = mnist.load_data()
@@ -50,4 +51,46 @@ autoencoder.fit(x_train, x_train,
                 shuffle=True,
                 validation_data=(x_test, x_test),
                 callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
+
+
+# Plotting input vs output autoencoder 
+
+decoded_imgs = autoencoder.predict(x_test)
+
+n = 10
+plt.figure(figsize=(20, 4))
+for i in range(1, n + 1):
+    # Display original
+    ax = plt.subplot(2, n, i)
+    plt.imshow(x_test[i].reshape(28, 28))
+    plt.gray()
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+
+    # Display reconstruction
+    ax = plt.subplot(2, n, i + n)
+    plt.imshow(decoded_imgs[i].reshape(28, 28))
+    plt.gray()
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+plt.show()
+
+# Plotting the middle layer 
+
+encoder = keras.Model(input_img, encoded)
+encoded_imgs = encoder.predict(x_test)
+
+n = 10
+plt.figure(figsize=(20, 8))
+for i in range(1, n + 1):
+    ax = plt.subplot(1, n, i)
+    plt.imshow(encoded_imgs[i].reshape((4, 4 * 8)).T)
+    plt.gray()
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+plt.show()
+
+
+
+
 
